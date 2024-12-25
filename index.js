@@ -47,7 +47,13 @@ async function run() {
 })
    
     app.get('/need-volunteer-posts', async (req, res) => {
-      const data = await NeedVolunteerCollections.find().toArray()
+      const search = req.query.search
+      const query = {
+        PostTitle: {
+          $regex: search,
+          $options: 'i'
+      }}
+      const data = await NeedVolunteerCollections.find(query).toArray()
       res.send(data)
     })
 
@@ -73,6 +79,9 @@ async function run() {
       
       res.send(result)
     })
+
+
+
   } finally {
     
   }
