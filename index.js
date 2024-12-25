@@ -34,9 +34,21 @@ const client = new MongoClient(uri, {
   }
 });
 
+const VolunteerCollections = client.db("NeedvolunteerPosts").collection('posts')
+
 async function run() {
   try {
+
+    app.post('/need-volunteer-posts', async (req, res) => {
+      const posts = req.body
+      const result = await VolunteerCollections.insertOne(posts)
+      res.send(result)
+})
    
+    app.get('/need-volunteer-posts', async (req, res) => {
+      const data = await VolunteerCollections.find().toArray()
+      res.send(data)
+    })
   } finally {
     
   }
