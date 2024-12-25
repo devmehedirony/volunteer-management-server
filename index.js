@@ -34,26 +34,43 @@ const client = new MongoClient(uri, {
   }
 });
 
-const VolunteerCollections = client.db("NeedvolunteerPosts").collection('posts')
+const NeedVolunteerCollections = client.db("NeedvolunteerPosts").collection('posts')
+const VolunteerCollections = client.db("volunteerPosts").collection('requested')
 
 async function run() {
   try {
 
     app.post('/need-volunteer-posts', async (req, res) => {
       const posts = req.body
-      const result = await VolunteerCollections.insertOne(posts)
+      const result = await NeedVolunteerCollections.insertOne(posts)
       res.send(result)
 })
    
     app.get('/need-volunteer-posts', async (req, res) => {
-      const data = await VolunteerCollections.find().toArray()
+      const data = await NeedVolunteerCollections.find().toArray()
       res.send(data)
     })
 
     app.get('/need-volunteer-posts/details/:id', async (req, res) => {
       const id = req.params.id
       const query = {_id: new ObjectId(id)}
-      const result = await VolunteerCollections.findOne(query)
+      const result = await NeedVolunteerCollections.findOne(query)
+      res.send(result)
+    })
+
+    app.post('/be-a-volunteer', async (req, res) => {
+      const requestVolunteer = req.body
+      const result = await VolunteerCollections.insertOne(requestVolunteer)
+
+     res.send(result)
+    })
+    app.patch('/volunteers-needed/:id', async (req, res) => {
+      const id  = req.params.id
+      const query = { _id: new ObjectId(id) }
+      
+      const updatedNeedVolunteer = { $inc: { volunteersNeeded: -1 } }
+      const result = await NeedVolunteerCollections.updateOne(query,updatedNeedVolunteer)
+      
       res.send(result)
     })
   } finally {
