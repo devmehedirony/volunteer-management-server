@@ -69,10 +69,39 @@ async function run() {
       res.send(data)
     })
 
-    app.get('/need-volunteer-posts/details/:id', async (req, res) => {
+    app.get('/need-volunteer-posts/:id', async (req, res) => {
       const id = req.params.id
       const query = {_id: new ObjectId(id)}
       const result = await NeedVolunteerCollections.findOne(query)
+      res.send(result)
+    })
+
+    app.put('/need-volunteer-posts/:id', async (req, res) => {
+      const id = req.params.id
+      const updatedPost = req.body
+      const query = { _id: new ObjectId(id) }
+      const options = {upsert: true}
+      const updatedDoc = {
+        $set: {
+          thumbnail: updatedPost.thumbnail,
+          PostTitle: updatedPost.PostTitle,
+          description: updatedPost.description,
+          Category: updatedPost.Category,
+          Location: updatedPost.Location,
+          OrganizerName: updatedPost.OrganizerName,
+          organizerEmail: updatedPost.organizerEmail,
+          volunteersNeeded: updatedPost.volunteersNeeded,
+          deadline: updatedPost.deadline,
+        }
+      }
+      const result = await NeedVolunteerCollections.updateOne(query,updatedDoc,options)
+      res.send(result)
+    })
+
+    app.delete('/need-volunteer-posts/:id', async (req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await NeedVolunteerCollections.deleteOne(query)
       res.send(result)
     })
 
@@ -96,6 +125,13 @@ async function run() {
       const updatedNeedVolunteer = { $inc: { volunteersNeeded: -1 } }
       const result = await NeedVolunteerCollections.updateOne(query,updatedNeedVolunteer)
       
+      res.send(result)
+    })
+
+    app.delete('/be-a-volunteer/:id', async (req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await VolunteerCollections.deleteOne(query)
       res.send(result)
     })
 
