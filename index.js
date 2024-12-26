@@ -48,11 +48,23 @@ async function run() {
    
     app.get('/need-volunteer-posts', async (req, res) => {
       const search = req.query.search
-      const query = {
-        PostTitle: {
-          $regex: search,
-          $options: 'i'
-      }}
+      const email = req.query.email
+
+      let query = {}
+      if (search) {
+        query = {
+          PostTitle: {
+            $regex: search,
+            $options: 'i'
+          }
+        }
+      }
+      
+      if (email) {
+        query = {
+          organizerEmail: email
+        }
+      }
       const data = await NeedVolunteerCollections.find(query).toArray()
       res.send(data)
     })
@@ -69,6 +81,13 @@ async function run() {
       const result = await VolunteerCollections.insertOne(requestVolunteer)
 
      res.send(result)
+    })
+
+    app.get('/be-a-volunteer', async (req, res) => {
+      const email = req.query.email
+      const query = { volunteerEmail : email}
+      const result = await VolunteerCollections.find(query).toArray()
+      res.send(result)
     })
     app.patch('/volunteers-needed/:id', async (req, res) => {
       const id  = req.params.id
