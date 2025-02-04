@@ -15,6 +15,7 @@ app.use(express.json())
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'https://volunteer-management-a1a32.web.app',
     ],
   credentials: true
 }))
@@ -74,7 +75,8 @@ async function run() {
         .cookie(
           'token', token, {
             httpOnly: true,
-            secure: false
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
           }
         )
         .send({ success: true })
@@ -84,7 +86,8 @@ async function run() {
       res
         .clearCookie('token', {
           httpOnly: true,
-          secure: false
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         })
         .send({ success: true })
 
