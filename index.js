@@ -15,6 +15,7 @@ app.use(express.json())
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'http://localhost:5174',
     'https://volunteer-management-a1a32.web.app',
     ],
   credentials: true
@@ -103,6 +104,9 @@ async function run() {
     app.get('/need-volunteer-posts', async (req, res) => {
       const search = req.query.search
       const sort = req.query.sort
+      const { volunteerNeeded } = req.query
+      const { Deadline } = req.query
+
 
       let query = {}
       if (search) {
@@ -113,6 +117,18 @@ async function run() {
           }
         }
       }
+
+      if (volunteerNeeded) {
+
+        const needsVolunteer = await NeedVolunteerCollections.find().sort({ volunteersNeeded: -1 }).toArray()
+        return res.send(needsVolunteer)
+      }
+
+      if (Deadline) {
+
+        const deadline = await NeedVolunteerCollections.find().sort({ deadline: -1 }).toArray()
+        return res.send(deadline)
+      }
       
       
 
@@ -121,6 +137,8 @@ async function run() {
         const ascendingPost = await NeedVolunteerCollections.find().sort({ deadline: 1 }).limit(6).toArray()
         return res.send(ascendingPost)
       }
+
+
       const data = await NeedVolunteerCollections.find(query).toArray()
       res.send(data)
     })
